@@ -1,0 +1,64 @@
+From b35256ad0cc3c8712cf90655d22cc714c3e83ac7 Mon Sep 17 00:00:00 2001
+From: Flopster101 <nahuelgomez329@gmail.com>
+Date: Fri, 8 May 2026 19:07:24 -0300
+Subject: [PATCH 1/2] recovery: ui: QoL improvements
+
+* Set Dark theme as default
+* Set navigation to navbar buttons by default and enable reversed navbar
+
+Signed-off-by: Flopster101 <nahuelgomez329@gmail.com>
+---
+ gui/theme/portrait_hdpi/resources/vars.xml |  2 +-
+ gui/theme/portrait_hdpi/themes/navbar.xml  | 10 +++++-----
+ gui/theme/portrait_hdpi/ui.xml             |  2 +-
+ 3 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/gui/theme/portrait_hdpi/resources/vars.xml b/gui/theme/portrait_hdpi/resources/vars.xml
+index 7dcffc29..f4bfe05f 100644
+--- a/gui/theme/portrait_hdpi/resources/vars.xml
++++ b/gui/theme/portrait_hdpi/resources/vars.xml
+@@ -63,7 +63,7 @@
+ 		<variable name="use_fixed_font" value="1" persist="1"/>
+ 		<variable name="show_cpu_temp" value="1" persist="1"/>
+ 		<variable name="list_font" value="1" persist="1"/>
+-		<variable name="navbar_sams" value="0" persist="1"/>
++		<variable name="navbar_sams" value="1" persist="1"/>
+ 		<variable name="show_slideout" value="1" persist="1"/>
+ 		<variable name="style_battery" value="2" persist="1"/>
+ 		<variable name="hide_notch" value="0" persist="1"/> 
+diff --git a/gui/theme/portrait_hdpi/themes/navbar.xml b/gui/theme/portrait_hdpi/themes/navbar.xml
+index bd964771..83601f72 100644
+--- a/gui/theme/portrait_hdpi/themes/navbar.xml
++++ b/gui/theme/portrait_hdpi/themes/navbar.xml
+@@ -1,9 +1,9 @@
+ <?xml version="1.0"?>
+ <recovery>
+ 	<variables>
+-		<variable name="navbar_disable" value="1"/>
+-		<variable name="navbar_disable_add" value="96"/>
+-		<variable name="screen_h" value="%screen_original_h%+96"/>
+-		<variable name="real_gestures_enable" value="1"/>
++		<variable name="navbar_disable" value="0"/>
++		<variable name="navbar_disable_add" value="0"/>
++		<variable name="screen_h" value="%screen_original_h%+0"/>
++		<variable name="real_gestures_enable" value="0"/>
+ 	</variables>
+-</recovery>
+\ No newline at end of file
++</recovery>
+diff --git a/gui/theme/portrait_hdpi/ui.xml b/gui/theme/portrait_hdpi/ui.xml
+index 99eed886..a9ffefe9 100644
+--- a/gui/theme/portrait_hdpi/ui.xml
++++ b/gui/theme/portrait_hdpi/ui.xml
+@@ -10,7 +10,7 @@
+ 
+ 		<xml name="%fox_navbar_path%/navbar.xml" default="/twres/themes/navbar.xml"/>
+ 		<xml name="%fox_theme_path%/font.xml"    default="/twres/themes/font.xml"/>
+-		<xml name="%fox_theme_path%/style.xml"   default="/twres/themes/style.xml"/>
++		<xml name="%fox_theme_path%/style.xml"   default="/twres/themes/styles/Dark.xml"/>
+ 		<xml name="%fox_theme_path%/accent.xml"  default="/twres/themes/accent.xml"/>
+ 
+ 		<xml name="/twres/resources/vars.xml"/>
+-- 
+2.54.0
+

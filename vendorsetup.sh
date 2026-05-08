@@ -39,3 +39,36 @@ export FOX_USE_SED_BINARY=1
 export FOX_USE_XZ_UTILS=1
 export FOX_REMOVE_AAPT=1
 export LC_ALL="C"
+
+_ginkgo_apply_recovery_patches() {
+    local device_tree
+    local recovery_tree
+    local patch
+
+    device_tree="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    recovery_tree="$(cd "${device_tree}/../../.." && pwd)/bootable/recovery"
+
+    if [ ! -d "${recovery_tree}/.git" ]; then
+        echo "Skipping recovery patches: ${recovery_tree} is not a git repository"
+        return 0
+    fi
+
+    for patch in "${device_tree}"/patches/*.patch; do
+        [ -e "${patch}" ] || continue
+
+        if git -C "${recovery_tree}" apply --reverse --check "${patch}" >/dev/null 2>&1; then
+            echo "Recovery patch already applied: $(basename "${patch}")"
+            continue
+        fi
+
+        echo "Applying recovery patch: $(basename "${patch}")"
+        if ! git -C "${recovery_tree}" am --3way "${patch}"; then
+            git -C "${recovery_tree}" am --abort >/dev/null 2>&1
+            echo "Failed to apply recovery patch: $(basename "${patch}")"
+            return 1
+        fi
+    done
+}
+
+_ginkgo_apply_recovery_patches
+unset -f _ginkgo_apply_recovery_patches
