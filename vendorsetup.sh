@@ -44,6 +44,7 @@ _ginkgo_apply_recovery_patches() {
     local device_tree
     local recovery_tree
     local patch
+    local subject
 
     device_tree="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     recovery_tree="$(cd "${device_tree}/../../.." && pwd)/bootable/recovery"
@@ -55,6 +56,12 @@ _ginkgo_apply_recovery_patches() {
 
     for patch in "${device_tree}"/patches/*.patch; do
         [ -e "${patch}" ] || continue
+
+        subject="$(sed -n 's/^Subject: \[PATCH[^]]*\] //p; s/^Subject: //p' "${patch}" | head -n 1)"
+        if [ -n "${subject}" ] && git -C "${recovery_tree}" log --format=%s | grep -Fxq "${subject}"; then
+            echo "Recovery patch already applied: $(basename "${patch}")"
+            continue
+        fi
 
         if git -C "${recovery_tree}" apply --reverse --check "${patch}" >/dev/null 2>&1; then
             echo "Recovery patch already applied: $(basename "${patch}")"
