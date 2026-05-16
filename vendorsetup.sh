@@ -57,21 +57,29 @@ _ginkgo_apply_recovery_patches() {
     for patch in "${device_tree}"/patches/*.patch; do
         [ -e "${patch}" ] || continue
 
-        subject="$(sed -n 's/^Subject: \[PATCH[^]]*\] //p; s/^Subject: //p' "${patch}" | head -n 1)"
-        if [ -n "${subject}" ] && git -C "${recovery_tree}" log --format=%s | grep -Fxq "${subject}"; then
+        # 1. Forward check
+        if git -C "${recovery_tree}" apply --check "${patch}" >/dev/null 2>&1; then
+            echo "Applying recovery patch: $(basename "${patch}")"
+            if ! git -C "${recovery_tree}" am --3way "${patch}"; then
+                git -C "${recovery_tree}" am --abort >/dev/null 2>&1
+                echo "Failed to apply recovery patch: $(basename "${patch}")"
+                return 1
+            fi
+            continue
+        fi
+
+        # 2. Fallback check
+        subject="$(sed -n 's/^Subject: \[PATCH[^]]*\] //p; s/^Subject: //p' "${patch}" | head -n 1 | xargs)"
+        if [ -n "${subject}" ] && git -C "${recovery_tree}" log -n 50 --grep="${subject}" --format=%s | grep -q . ; then
             echo "Recovery patch already applied: $(basename "${patch}")"
             continue
         fi
 
-        if git -C "${recovery_tree}" apply --reverse --check "${patch}" >/dev/null 2>&1; then
-            echo "Recovery patch already applied: $(basename "${patch}")"
-            continue
-        fi
-
-        echo "Applying recovery patch: $(basename "${patch}")"
+        # 3. Attempt application with 3-way merge
+        echo "Applying recovery patch (with 3-way merge): $(basename "${patch}")"
         if ! git -C "${recovery_tree}" am --3way "${patch}"; then
             git -C "${recovery_tree}" am --abort >/dev/null 2>&1
-            echo "Failed to apply recovery patch: $(basename "${patch}")"
+            echo "Failed to apply recovery patch (conflict?): $(basename "${patch}")"
             return 1
         fi
     done
