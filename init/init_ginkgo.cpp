@@ -52,9 +52,11 @@ void model_property_override(const std::string& device, const std::string& model
 
 void vendor_load_properties() {
     const std::string hwc = GetProperty("ro.boot.hwc", "");
-    if (hwc == "Global_B") {
+    const std::string hwversion = GetProperty("ro.boot.hwversion", "");
+    if (hwc == "Global_B" &&
+        (hwversion == "18.31.0" || hwversion == "18.39.0" || hwversion == "19.39.0")) {
         model_property_override("willow", "Redmi Note 8T");
-    } else if (hwc == "Global")  {
+    } else {
         model_property_override("ginkgo", "Redmi Note 8");
     }
 }
