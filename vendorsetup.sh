@@ -13,7 +13,6 @@ export FOX_REPLACE_TOOLBOX_GETPROP=1
 export OF_USE_MAGISKBOOT=1
 export OF_USE_MAGISKBOOT_FOR_ALL_PATCHES=1
 export OF_USE_LZMA_COMPRESSION=1
-export OF_FL_PATH1=/sys/class/leds/flashlight/brightness
 export OF_SCREEN_H=2340
 export OF_STATUS_H=80
 export OF_STATUS_INDENT_LEFT=48
