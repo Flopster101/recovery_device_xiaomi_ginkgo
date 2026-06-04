@@ -1,0 +1,49 @@
+From 2f19ab8a4594ecbbeb375f4ec4afee7e3983fb65 Mon Sep 17 00:00:00 2001
+From: Flopster101 <nahuelgomez329@gmail.com>
+Date: Thu, 4 Jun 2026 14:15:11 -0300
+Subject: [PATCH] partitionmanager: Skip super device/partition setup on legacy
+ ROMs
+
+Signed-off-by: Flopster101 <nahuelgomez329@gmail.com>
+---
+ partitionmanager.cpp | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/partitionmanager.cpp b/partitionmanager.cpp
+index 00db3a13..3fa21f02 100755
+--- a/partitionmanager.cpp
++++ b/partitionmanager.cpp
+@@ -352,7 +352,11 @@ int TWPartitionManager::Process_Fstab(string Fstab_Filename, bool Display_Error,
+ 
+ 	fstabFile = fopen("/etc/twrp.flags", "rt");
+ 	if (Get_Super_Status()) {
+-		Setup_Super_Devices();
++		if (TWFunc::Fox_Property_Get("ro.twrp.rom_is_dynamic") != "false") {
++			Setup_Super_Devices();
++		} else {
++			LOGINFO("ro.twrp.rom_is_dynamic is false, skipping Setup_Super_Devices\n");
++		}
+ 	}
+ 	if (fstabFile != NULL) {
+ 		LOGINFO("Reading /etc/twrp.flags\n");
+@@ -627,7 +631,7 @@ void TWPartitionManager::Setup_Fstab_Partitions(bool Display_Error) {
+ 	#endif
+ 
+ 		Update_System_Details();
+-		if (Get_Super_Status())
++		if (Get_Super_Status() && TWFunc::Fox_Property_Get("ro.twrp.rom_is_dynamic") != "false")
+ 			Setup_Super_Partition();
+ 		UnMount_Main_Partitions();
+ 	#ifdef AB_OTA_UPDATER
+@@ -750,7 +754,7 @@ void TWPartitionManager::Setup_Android_Secure_Location(TWPartition* Part) {
+ }
+ 
+ void TWPartitionManager::Fox_Set_Dynamic_Partition_Props() {
+-  	if (Get_Super_Status()) {
++  	if (Get_Super_Status() && TWFunc::Fox_Property_Get("ro.twrp.rom_is_dynamic") != "false") {
+ 		if (TWFunc::Fox_Property_Get("fox_dynamic_device") == "0") {
+ 			DataManager::SetValue("fox_dynamic_device", "0");
+ 			TWFunc::Fox_Property_Set("orangefox.super.partition", "false");
+-- 
+2.54.0
+

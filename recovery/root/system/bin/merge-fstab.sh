@@ -9,6 +9,7 @@ ISEROFS=$?
 
 # Dynamic partitions
 if dd if=/dev/block/by-name/system bs=256k count=1 | strings | grep -q -E "ginkgo_dynapart|qti_dynamic_partitions|ginkgo_erofs_dynapart"; then
+    setprop ro.twrp.rom_is_dynamic true
     if [ "$ISEROFS" -eq 0 ]; then
         cat /system/etc/recovery.fstab.erofs >> /system/etc/recovery.fstab
     else
@@ -24,6 +25,7 @@ if dd if=/dev/block/by-name/system bs=256k count=1 | strings | grep -q -E "ginkg
     done
 else
     # Non-dynamic partitions
+    setprop ro.twrp.rom_is_dynamic false
     cat /system/etc/twrp.flags.nondynpart >> /system/etc/twrp.flags
     cat /system/etc/recovery.fstab.fbev1 >> /system/etc/recovery.fstab
 fi
