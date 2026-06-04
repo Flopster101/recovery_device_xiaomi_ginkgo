@@ -28,4 +28,12 @@ else
     setprop ro.twrp.rom_is_dynamic false
     cat /system/etc/twrp.flags.nondynpart >> /system/etc/twrp.flags
     cat /system/etc/recovery.fstab.fbev1 >> /system/etc/recovery.fstab
+
+    # Spoof /proc/cmdline to remove androidboot.super_partition so Magisk doesn't think it's a dynamic ROM
+    # Also remove other dynamic partition parameters to be safe and clean
+    sed -e 's/androidboot.super_partition=[^ ]*//g' \
+        -e 's/androidboot.dynamic_partitions=[^ ]*//g' \
+        -e 's/androidboot.dynamic_partitions_retrofit=[^ ]*//g' \
+        /proc/cmdline > /tmp/cmdline
+    mount -o bind /tmp/cmdline /proc/cmdline
 fi
